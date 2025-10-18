@@ -17,21 +17,26 @@ const LogoutButton = () => {
   return (
     <button
       onClick={handleLogout}
-      className="bg-gray-100 text-black border border-gray-300 px-5 py-2 rounded-lg shadow-sm hover:bg-gray-200 transition-all duration-200"
       style={{
-        marginRight: "40px",
-        fontSize: "15px",
-        fontWeight: "500",
+        padding: "10px 28px",        
+        fontSize: "1rem",            
+        backgroundColor: "white",
+        color: "#1565c0",
+        fontWeight: "600",
+        marginRight: "100px",
+        borderRadius: "9999px",
+        border: "none",
+        boxShadow: "0 3px 8px rgba(0,0,0,0.1)", 
         cursor: "pointer",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        minWidth: "90px",
-        marginRight: "90px"
+        transition: "all 0.3s ease",
       }}
+      onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#e8f1ff")}
+      onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "white")}
     >
       Logout
     </button>
+
+
   );
 };
 
