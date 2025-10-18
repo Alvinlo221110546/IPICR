@@ -7,7 +7,7 @@ export default function Header() {
       style={{
         backgroundColor: '#1565c0',
         color: '#fff',
-        padding: '18px 60px 18px 48px', // padding kanan lebih besar agar tombol tak tergencet
+        padding: '20px 30px',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -18,15 +18,13 @@ export default function Header() {
         left: 0,
         right: 0,
         zIndex: 1000,
-        margin: 0,
       }}
     >
       <h1
         style={{
-          fontSize: '22px',
-          fontWeight: '600',
-          letterSpacing: '0.5px',
-          margin: 0,
+          fontSize: '24px',
+          fontWeight: '700',
+          marginLeft: '40px', 
         }}
       >
         ICR Pedigree Dashboard
