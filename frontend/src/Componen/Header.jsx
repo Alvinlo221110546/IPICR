@@ -1,7 +1,11 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import LogoutButton from './LogoutButton.jsx';
 
-export default function Header() {
+export default function Header({ role }) {
+  // pastikan role huruf kecil
+  const userRole = role?.toLowerCase();
+
   return (
     <header
       style={{
@@ -24,11 +28,21 @@ export default function Header() {
         style={{
           fontSize: '24px',
           fontWeight: '700',
-          marginLeft: '40px', 
+          marginLeft: '40px',
         }}
       >
-        ICR Pedigree Dashboard
+        ICR Pedigree 
       </h1>
+
+      {/* Navigasi hanya untuk user */}
+      {userRole === 'user' && (
+        <nav style={{ display: 'flex', gap: '20px', marginRight: '40px' }}>
+          <Link to="/" style={{ color: '#fff', textDecoration: 'none' }}>Home</Link>
+          <Link to="/dashboard-user" style={{ color: '#fff', textDecoration: 'none' }}>Dashboard</Link>
+          <Link to="/about" style={{ color: '#fff', textDecoration: 'none' }}>About Us</Link>
+          <Link to="/contact" style={{ color: '#fff', textDecoration: 'none' }}>Contact Us</Link>
+        </nav>
+      )}
 
       <LogoutButton />
     </header>
