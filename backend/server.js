@@ -13,12 +13,17 @@ import familyRoutes from './Routes/familyRoutes.js';
 import * as AuthController from './Controller/authController.js';
 import * as AuditModel from './Models/auditModel.js';
 import * as FamilyController from './Controller/familyController.js';
+import contactRoutes from './Routes/contact.js';
 
 const app = express();
 
 // Security & basic middleware
 app.use(helmet());
-app.use(cors({ origin: true, credentials: true }));
+app.use(cors({
+  origin: ['http://localhost:5173'], 
+  credentials: true
+}));
+
 app.use(express.json({ limit: '10kb' }));
 app.use(cookieParser());
 
@@ -56,6 +61,7 @@ if (users[0].cnt === 0) {
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/family', familyRoutes);
+app.use('/api', contactRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) =>

@@ -1,25 +1,59 @@
 import * as Family from '../Models/familyModel.js';
 import { insertAudit } from '../Models/auditModel.js';
 
+// Inisialisasi tabel keluarga (dipanggil saat aplikasi start)
 export const init = async () => {
   await Family.createFamilyTableIfNotExists();
 };
 
-
+// Tambah anggota baru
 export const createMember = async (req, res) => {
   try {
-    const { name, dob, father_name, mother_name, notes } = req.body;
-
-    if (!name) {
-      return res.status(400).json({ message: 'Nama wajib diisi' });
-    }
-
-    const id = await Family.insertMember({
+    const {
+      nik,
       name,
       dob,
       father_name,
       mother_name,
       notes,
+      parent_id,
+      gender,
+      spouse_id,
+      generation,
+      grandfather_id,
+      grandmother_id
+    } = req.body;
+
+    // Validasi nama
+    if (!name || !name.trim()) {
+      return res.status(400).json({ message: 'Nama wajib diisi' });
+    }
+
+    // Validasi NIK
+    if (!nik || nik.length < 10) {
+      return res.status(400).json({ message: 'NIK tidak valid' });
+    }
+
+    // Konversi foreign key menjadi INT atau NULL
+    const pid = parent_id ? parseInt(parent_id) : null;
+    const sid = spouse_id ? parseInt(spouse_id) : null;
+    const gid = grandfather_id ? parseInt(grandfather_id) : null;
+    const gm_id = grandmother_id ? parseInt(grandmother_id) : null;
+    const gen = generation ? parseInt(generation) : 1;
+
+    const id = await Family.insertMember({
+      nik,
+      name,
+      dob,
+      father_name,
+      mother_name,
+      notes,
+      parent_id: pid,
+      gender: gender || 'male',
+      spouse_id: sid,
+      generation: gen,
+      grandfather_id: gid,
+      grandmother_id: gm_id
     });
 
     await insertAudit({
@@ -37,6 +71,7 @@ export const createMember = async (req, res) => {
   }
 };
 
+// Ambil semua anggota keluarga
 export const getMembers = async (req, res) => {
   try {
     const rows = await Family.getAllMembers();
@@ -47,9 +82,12 @@ export const getMembers = async (req, res) => {
   }
 };
 
+// Ambil anggota berdasarkan ID
 export const getMemberById = async (req, res) => {
   try {
-    const id = req.params.id;
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) return res.status(400).json({ message: 'ID tidak valid' });
+
     const member = await Family.getMemberById(id);
     if (!member) return res.status(404).json({ message: 'Member not found' });
 
@@ -60,17 +98,52 @@ export const getMemberById = async (req, res) => {
   }
 };
 
+// Update data anggota
 export const updateMember = async (req, res) => {
   try {
-    const id = req.params.id;
-    const { name, dob, father_name, mother_name, notes } = req.body;
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) return res.status(400).json({ message: 'ID tidak valid' });
 
-    await Family.updateMember(id, {
+    const {
+      nik,
       name,
       dob,
       father_name,
       mother_name,
       notes,
+      parent_id,
+      gender,
+      spouse_id,
+      generation,
+      grandfather_id,
+      grandmother_id
+    } = req.body;
+
+    // Validasi nama
+    if (!name || !name.trim()) {
+      return res.status(400).json({ message: 'Nama wajib diisi' });
+    }
+
+    // Konversi foreign key menjadi INT atau NULL
+    const pid = parent_id ? parseInt(parent_id) : null;
+    const sid = spouse_id ? parseInt(spouse_id) : null;
+    const gid = grandfather_id ? parseInt(grandfather_id) : null;
+    const gm_id = grandmother_id ? parseInt(grandmother_id) : null;
+    const gen = generation ? parseInt(generation) : 1;
+
+    await Family.updateMember(id, {
+      nik,
+      name,
+      dob,
+      father_name,
+      mother_name,
+      notes,
+      parent_id: pid,
+      gender: gender || 'male',
+      spouse_id: sid,
+      generation: gen,
+      grandfather_id: gid,
+      grandmother_id: gm_id
     });
 
     await insertAudit({
@@ -87,10 +160,12 @@ export const updateMember = async (req, res) => {
   }
 };
 
-
+// ❌ Hapus anggota keluarga
 export const deleteMember = async (req, res) => {
   try {
-    const id = req.params.id;
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) return res.status(400).json({ message: 'ID tidak valid' });
+
     await Family.deleteMember(id);
 
     await insertAudit({

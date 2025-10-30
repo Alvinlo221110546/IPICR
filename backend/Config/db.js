@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const pool = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
+  host: process.env.DB_HOST || 'db',
   user: process.env.DB_USER || 'root',
   password: process.env.DB_PASS || '',
   database: process.env.DB_NAME || 'icr_pedigree',
@@ -12,3 +12,14 @@ export const pool = mysql.createPool({
   port: process.env.DB_PORT || 3306,
   charset: 'utf8mb4'
 });
+
+
+(async () => {
+  try {
+    const connection = await pool.getConnection();
+    console.log('✅ Database connected!');
+    connection.release(); 
+  } catch (err) {
+    console.error('❌ Database connection failed:', err);
+  }
+})();

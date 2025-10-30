@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { login } from '../Utils/api.js';
 
-export default function Login() {
+export default function Login({ setUser }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
@@ -10,10 +10,24 @@ export default function Login() {
   const submit = async (e) => {
     e.preventDefault();
     try {
-      await login(username, password);
-      navigate('/dashboard');
+      const res = await login(username, password);
+      
+      // Misal API mengembalikan data user { role: 'admin'/'user', username: '...' }
+      const userData = res.data;
+
+      // Simpan info user di state
+      setUser({ ...userData, loggedIn: true });
+
+      // Redirect berdasarkan role
+      if (userData.role === 'admin') {
+        navigate('/dashboard');
+      } else if (userData.role === 'user') {
+        navigate('/dashboard-user');
+      } else {
+        alert('Role tidak dikenal');
+      }
     } catch (err) {
-      alert(err.response?.data?.message || 'Login failed');
+      alert(err.response?.data?.message || 'Login gagal');
     }
   };
 
@@ -26,8 +40,8 @@ export default function Login() {
       background: 'linear-gradient(135deg, #e3f2fd, #bbdefb)',
       fontFamily: 'Arial, sans-serif'
     }}>
-      <form 
-        onSubmit={submit} 
+      <form
+        onSubmit={submit}
         style={{
           width: '360px',
           backgroundColor: '#fff',
@@ -53,14 +67,12 @@ export default function Login() {
             color: '#1565c0',
             fontSize: '14px',
             fontWeight: '500'
-          }}>
-            Username
-          </label>
-          <input 
-            value={username} 
-            onChange={e => setUsername(e.target.value)} 
+          }}>Username</label>
+          <input
+            value={username}
+            onChange={e => setUsername(e.target.value)}
             placeholder="Masukkan username"
-            required 
+            required
             style={{
               width: '100%',
               height: '42px',
@@ -84,15 +96,13 @@ export default function Login() {
             color: '#1565c0',
             fontSize: '14px',
             fontWeight: '500'
-          }}>
-            Password
-          </label>
-          <input 
-            type="password" 
-            value={password} 
-            onChange={e => setPassword(e.target.value)} 
-            placeholder="Masukkan password" 
-            required 
+          }}>Password</label>
+          <input
+            type="password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            placeholder="Masukkan password"
+            required
             style={{
               width: '100%',
               height: '42px',
@@ -109,7 +119,7 @@ export default function Login() {
           />
         </div>
 
-        <button 
+        <button
           type="submit"
           style={{
             width: '100%',
@@ -128,6 +138,21 @@ export default function Login() {
         >
           Login
         </button>
+
+        <p style={{
+          textAlign: 'center',
+          marginTop: '16px',
+          fontSize: '14px',
+          color: '#555'
+        }}>
+          Don’t have an account?{' '}
+          <Link
+            to="/register"
+            style={{ color: '#1565c0', cursor: 'pointer', fontWeight: '600', textDecoration: 'none' }}
+          >
+            Register now
+          </Link>
+        </p>
       </form>
     </div>
   );
