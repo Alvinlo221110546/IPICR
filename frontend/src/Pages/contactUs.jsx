@@ -2,69 +2,69 @@ import React, { useState } from 'react';
 
 export default function ContactUs() {
   const [form, setForm] = useState({ name: '', email: '', message: '' });
-  const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
+    setLoading(true);
 
-    try {
-      const res = await fetch('http://localhost:5000/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
-      });
+    const { name, email, message } = form;
+    const text = `Halo! Saya ${name} (${email}).%0A%0A${message}`;
+    const whatsappURL = `https://wa.me/628979728413?text=${encodeURIComponent(text)}`;
 
-      const data = await res.json();
-
-      if (res.ok) {
-        setSubmitted(true);
-        setForm({ name: '', email: '', message: '' });
-      } else {
-        alert('Gagal mengirim pesan: ' + data.message);
-      }
-    } catch (err) {
-      console.error('Error:', err);
-      alert('Terjadi kesalahan saat mengirim pesan.');
-    }
+    setTimeout(() => {
+      window.open(whatsappURL, '_blank');
+      setLoading(false);
+      setSuccess(true);
+      setForm({ name: '', email: '', message: '' });
+    }, 1200);
   };
 
-
   return (
-    <div style={{
-      padding: '80px 20px 40px',
-      maxWidth: '700px',
-      margin: '0 auto',
-      fontFamily: 'Arial, sans-serif',
-      lineHeight: '1.6',
-      color: '#333',
-    }}>
-      <h1 style={{
-        color: '#1565c0',
-        textAlign: 'center',
-        marginBottom: '30px'
-      }}>
+    <div
+      style={{
+        padding: '80px 20px 40px',
+        maxWidth: '700px',
+        margin: '0 auto',
+        fontFamily: 'Arial, sans-serif',
+        lineHeight: '1.6',
+        color: '#333',
+      }}
+    >
+      <h1
+        style={{
+          color: '#1565c0',
+          textAlign: 'center',
+          marginBottom: '30px',
+        }}
+      >
         Contact Us
       </h1>
 
       <p style={{ textAlign: 'center', marginBottom: '40px' }}>
-        Ingin menghubungi <strong>ICR Pedigree</strong>? Silakan isi form di bawah ini atau email kami di <strong>support@icrpedigree.com</strong>.
+        Ingin menghubungi <strong>ICR Pedigree</strong>? Isi form di bawah ini,
+        lalu pesan Anda akan terkirim langsung ke WhatsApp admin kami.
       </p>
 
-      {submitted && (
-        <p style={{ color: 'green', textAlign: 'center' }}>
-          Terima kasih! Pesan Anda telah terkirim.
+      {success && (
+        <p style={{ color: 'green', textAlign: 'center', fontWeight: 600 }}>
+          ✅ Terima kasih! WhatsApp Anda telah dibuka.
         </p>
       )}
 
-      <form onSubmit={handleSubmit} style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '16px',
-      }}>
+      <form
+        onSubmit={handleSubmit}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '16px',
+        }}
+      >
         <input
           type="text"
           name="name"
@@ -77,6 +77,7 @@ export default function ContactUs() {
             borderRadius: '8px',
             border: '1.5px solid #90caf9',
             outline: 'none',
+            color: '#1565c0',
           }}
         />
         <input
@@ -91,6 +92,7 @@ export default function ContactUs() {
             borderRadius: '8px',
             border: '1.5px solid #90caf9',
             outline: 'none',
+            color: '#1565c0',
           }}
         />
         <textarea
@@ -106,18 +108,25 @@ export default function ContactUs() {
             border: '1.5px solid #90caf9',
             outline: 'none',
             resize: 'vertical',
+            color: '#1565c0',
           }}
         />
-        <button type="submit" style={{
-          padding: '12px',
-          backgroundColor: '#1565c0',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '8px',
-          fontWeight: '600',
-          cursor: 'pointer',
-        }}>
-          Kirim Pesan
+
+        <button
+          type="submit"
+          disabled={loading}
+          style={{
+            padding: '12px',
+            backgroundColor: loading ? '#90caf9' : '#1565c0',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '8px',
+            fontWeight: '600',
+            cursor: loading ? 'not-allowed' : 'pointer',
+            transition: 'background-color 0.3s ease',
+          }}
+        >
+          {loading ? 'Mengirim...' : 'Kirim ke WhatsApp'}
         </button>
       </form>
     </div>
