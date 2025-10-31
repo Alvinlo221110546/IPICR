@@ -1,4 +1,3 @@
-// src/Pages/AboutUs.jsx
 import React from 'react';
 
 export default function AboutUs() {

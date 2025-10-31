@@ -2,9 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { getMembers, createMember, updateMember, deleteMember } from '../Utils/api.js';
 import Footer from '../Componen/Footer.jsx';
 
-// ========================
+
 // Form untuk tambah/edit
-// ========================
 function MemberForm({ onDone, initial, members }) {
   const [form, setForm] = useState({
     nik: '',
@@ -105,9 +104,9 @@ function MemberForm({ onDone, initial, members }) {
   );
 }
 
-// ========================
+
 // Dashboard utama
-// ========================
+
 export default function Dashboard() {
   const [members, setMembers] = useState([]);
   const [editing, setEditing] = useState(null);
@@ -221,9 +220,9 @@ export default function Dashboard() {
   );
 }
 
-// ========================
+
 // Styles
-// ========================
+
 const formStyle = {
   display: 'flex',
   flexDirection: 'column',

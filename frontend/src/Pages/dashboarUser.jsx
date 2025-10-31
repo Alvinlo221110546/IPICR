@@ -74,9 +74,8 @@ export default function UserDashboard() {
     }
   };
 
-  // ======================
+ 
   // TREE VIEW GENERATOR
-  // ======================
   const buildTree = () => {
     const map = {};
     const roots = [];

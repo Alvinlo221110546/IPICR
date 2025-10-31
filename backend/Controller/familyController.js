@@ -1,12 +1,12 @@
 import * as Family from '../Models/familyModel.js';
 import { insertAudit } from '../Models/auditModel.js';
 
-// Inisialisasi tabel keluarga (dipanggil saat aplikasi start)
+
 export const init = async () => {
   await Family.createFamilyTableIfNotExists();
 };
 
-// Tambah anggota baru
+
 export const createMember = async (req, res) => {
   try {
     const {
@@ -24,17 +24,16 @@ export const createMember = async (req, res) => {
       grandmother_id
     } = req.body;
 
-    // Validasi nama
+    
     if (!name || !name.trim()) {
       return res.status(400).json({ message: 'Nama wajib diisi' });
     }
 
-    // Validasi NIK
     if (!nik || nik.length < 10) {
       return res.status(400).json({ message: 'NIK tidak valid' });
     }
 
-    // Konversi foreign key menjadi INT atau NULL
+   
     const pid = parent_id ? parseInt(parent_id) : null;
     const sid = spouse_id ? parseInt(spouse_id) : null;
     const gid = grandfather_id ? parseInt(grandfather_id) : null;
@@ -71,7 +70,7 @@ export const createMember = async (req, res) => {
   }
 };
 
-// Ambil semua anggota keluarga
+
 export const getMembers = async (req, res) => {
   try {
     const rows = await Family.getAllMembers();
@@ -82,7 +81,6 @@ export const getMembers = async (req, res) => {
   }
 };
 
-// Ambil anggota berdasarkan ID
 export const getMemberById = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
@@ -98,7 +96,7 @@ export const getMemberById = async (req, res) => {
   }
 };
 
-// Update data anggota
+
 export const updateMember = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
@@ -119,12 +117,12 @@ export const updateMember = async (req, res) => {
       grandmother_id
     } = req.body;
 
-    // Validasi nama
+   
     if (!name || !name.trim()) {
       return res.status(400).json({ message: 'Nama wajib diisi' });
     }
 
-    // Konversi foreign key menjadi INT atau NULL
+    
     const pid = parent_id ? parseInt(parent_id) : null;
     const sid = spouse_id ? parseInt(spouse_id) : null;
     const gid = grandfather_id ? parseInt(grandfather_id) : null;
@@ -160,7 +158,7 @@ export const updateMember = async (req, res) => {
   }
 };
 
-// ❌ Hapus anggota keluarga
+
 export const deleteMember = async (req, res) => {
   try {
     const id = parseInt(req.params.id);

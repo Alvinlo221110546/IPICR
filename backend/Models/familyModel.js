@@ -1,7 +1,6 @@
 import { pool } from '../Config/db.js';
 import { encryptText, decryptText } from '../Middleware/encrypt.js';
 
-// Buat tabel family_members jika belum ada
 export const createFamilyTableIfNotExists = async () => {
   const sql = `
   CREATE TABLE IF NOT EXISTS family_members (
@@ -30,7 +29,6 @@ export const createFamilyTableIfNotExists = async () => {
   await pool.query(sql);
 };
 
-// Tambah anggota baru
 export const insertMember = async ({
   nik,
   name,
@@ -51,7 +49,6 @@ export const insertMember = async ({
   const encMother = mother_name ? encryptText(mother_name) : '';
   const encNotes = notes ? encryptText(notes) : '';
 
-  // Gunakan null jika tidak ada
   const pid = parent_id ? parseInt(parent_id) : null;
   const sid = spouse_id ? parseInt(spouse_id) : null;
   const gid = grandfather_id ? parseInt(grandfather_id) : null;
@@ -68,7 +65,6 @@ export const insertMember = async ({
 };
 
 
-// Update data anggota
 export const updateMember = async (
   id,
   {
@@ -92,7 +88,6 @@ export const updateMember = async (
   const encMother = mother_name ? encryptText(mother_name) : '';
   const encNotes = notes ? encryptText(notes) : '';
 
-  // Gunakan null jika tidak ada
   const pid = parent_id ? parseInt(parent_id) : null;
   const sid = spouse_id ? parseInt(spouse_id) : null;
   const gid = grandfather_id ? parseInt(grandfather_id) : null;
@@ -106,7 +101,6 @@ export const updateMember = async (
   );
 };
 
-// Ambil semua anggota
 export const getAllMembers = async () => {
   const [rows] = await pool.query(`
     SELECT id, nik, name, dob, father_name, mother_name, notes, gender, parent_id, spouse_id, generation, grandfather_id, grandmother_id
@@ -131,7 +125,7 @@ export const getAllMembers = async () => {
   }));
 };
 
-// Ambil anggota berdasarkan ID
+
 export const getMemberById = async (id) => {
   const [rows] = await pool.query(`SELECT * FROM family_members WHERE id=?`, [id]);
   if (rows.length === 0) return null;
@@ -153,7 +147,7 @@ export const getMemberById = async (id) => {
   };
 };
 
-// Hapus anggota
+
 export const deleteMember = async (id) => {
   await pool.execute(`DELETE FROM family_members WHERE id=?`, [id]);
 };
