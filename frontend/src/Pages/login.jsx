@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { login } from '../Utils/api.js';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+const MySwal = withReactContent(Swal);
 
 export default function Login({ setUser }) {
   const [username, setUsername] = useState('');
@@ -11,23 +15,27 @@ export default function Login({ setUser }) {
     e.preventDefault();
     try {
       const res = await login(username, password);
-      
-      // Misal API mengembalikan data user { role: 'admin'/'user', username: '...' }
       const userData = res.data;
 
-      // Simpan info user di state
       setUser({ ...userData, loggedIn: true });
 
-      // Redirect berdasarkan role
       if (userData.role === 'admin') {
         navigate('/dashboard');
       } else if (userData.role === 'user') {
         navigate('/dashboard-user');
       } else {
-        alert('Role tidak dikenal');
+        await MySwal.fire({
+          icon: 'warning',
+          title: 'Role tidak dikenal',
+          text: 'Role user tidak valid',
+        });
       }
     } catch (err) {
-      alert(err.response?.data?.message || 'Login gagal');
+      await MySwal.fire({
+        icon: 'error',
+        title: 'Login gagal',
+        text: err.response?.data?.message || 'Username atau password salah',
+      });
     }
   };
 

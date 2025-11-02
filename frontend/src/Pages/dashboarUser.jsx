@@ -1,26 +1,29 @@
 import React, { useEffect, useState } from "react";
-import { getMembers, createMember } from "../Utils/api.js";
+import { getMembers, createMember, updateMember, deleteMember } from "../Utils/api.js";
 import Footer from "../Componen/Footer.jsx";
 import "bootstrap/dist/css/bootstrap.min.css";
 import userpict from "../assets/user-default.png";
+
+// SweetAlert2
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+
+const MySwal = withReactContent(Swal);
 
 export default function UserDashboard() {
   const [members, setMembers] = useState([]);
   const [formVisible, setFormVisible] = useState(false);
   const [treeVisible, setTreeVisible] = useState(false);
+  const [editingId, setEditingId] = useState(null);
 
   const [form, setForm] = useState({
     nik: "",
     name: "",
     dob: "",
     gender: "male",
-    father_name: "",
-    mother_name: "",
+    father_id: null,
+    mother_id: null,
     spouse_id: null,
-    parent_id: null,
-    generation: 1,
-    grandfather_id: null,
-    grandmother_id: null,
     notes: "",
   });
 
@@ -29,7 +32,11 @@ export default function UserDashboard() {
       const data = await getMembers();
       setMembers(data);
     } catch (e) {
-      alert("Silakan login terlebih dahulu");
+      await MySwal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Silakan login terlebih dahulu",
+      });
       window.location = "/login";
     }
   };
@@ -38,57 +45,133 @@ export default function UserDashboard() {
     loadMembers();
   }, []);
 
-  const onCreate = async (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
 
+    if (!form.name.trim()) {
+      await MySwal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Nama wajib diisi!",
+      });
+      return;
+    }
+
     const payload = {
-      ...form,
+      nik: form.nik,
+      name: form.name,
+      dob: form.dob,
+      gender: form.gender,
+      father_id: form.father_id ?? null,
+      mother_id: form.mother_id ?? null,
       spouse_id: form.spouse_id ?? null,
-      parent_id: form.parent_id ?? null,
-      generation: form.generation ? Number(form.generation) : 1,
-      grandfather_id: form.grandfather_id ?? null,
-      grandmother_id: form.grandmother_id ?? null,
+      notes: form.notes,
     };
 
     try {
-      await createMember(payload);
-      // Reset form
-      setForm({
-        nik: "",
-        name: "",
-        dob: "",
-        gender: "male",
-        father_name: "",
-        mother_name: "",
-        spouse_id: null,
-        parent_id: null,
-        generation: 1,
-        grandfather_id: null,
-        grandmother_id: null,
-        notes: "",
-      });
-      setFormVisible(false);
+      if (editingId) {
+        await updateMember(editingId, payload);
+        await MySwal.fire({
+          icon: "success",
+          title: "Berhasil!",
+          text: "Anggota keluarga berhasil diperbarui!",
+        });
+      } else {
+        await createMember(payload);
+        await MySwal.fire({
+          icon: "success",
+          title: "Berhasil!",
+          text: "Anggota keluarga berhasil ditambahkan!",
+        });
+      }
+      resetForm();
       await loadMembers();
     } catch (err) {
-      alert(err.message || "Gagal membuat anggota keluarga");
+      await MySwal.fire({
+        icon: "error",
+        title: "Gagal",
+        text: err.message || "Gagal menyimpan anggota keluarga",
+      });
     }
   };
 
- 
-  // TREE VIEW GENERATOR
-  const buildTree = () => {
+  const resetForm = () => {
+    setForm({
+      nik: "",
+      name: "",
+      dob: "",
+      gender: "male",
+      father_id: null,
+      mother_id: null,
+      spouse_id: null,
+      notes: "",
+    });
+    setEditingId(null);
+    setFormVisible(false);
+  };
+
+  const onEdit = (member) => {
+    setForm({
+      nik: member.nik,
+      name: member.name,
+      dob: member.dob,
+      gender: member.gender,
+      father_id: member.father_id,
+      mother_id: member.mother_id,
+      spouse_id: member.spouse_id,
+      notes: member.notes,
+    });
+    setEditingId(member.id);
+    setFormVisible(true);
+  };
+
+  const onDelete = async (id) => {
+    const result = await MySwal.fire({
+      title: "Apakah Anda yakin?",
+      text: "Anggota ini akan dihapus permanen!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Ya, hapus!",
+      cancelButtonText: "Batal",
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      await deleteMember(id);
+      await loadMembers();
+      await MySwal.fire({
+        icon: "success",
+        title: "Terhapus!",
+        text: "Anggota berhasil dihapus",
+      });
+    } catch (err) {
+      await MySwal.fire({
+        icon: "error",
+        title: "Gagal",
+        text: err.message || "Gagal menghapus anggota",
+      });
+    }
+  };
+
+  // Membuat tree berbasis generasi
+  const buildTreeByGeneration = () => {
     const map = {};
     const roots = [];
 
-    // Buat map dengan ID
+    // Inisialisasi node dengan children dan level
     members.forEach((m) => {
-      map[m.id] = { ...m, children: [] };
+      map[m.id] = { ...m, children: [], level: 0 };
     });
 
+    // Pasang children dan tentukan level generasi
     members.forEach((m) => {
       const node = map[m.id];
-      if (m.parent_id && map[m.parent_id]) {
-        map[m.parent_id].children.push(node);
+      if (m.father_id && map[m.father_id]) {
+        map[m.father_id].children.push(node);
+        node.level = map[m.father_id].level + 1;
       } else {
         roots.push(node);
       }
@@ -97,24 +180,61 @@ export default function UserDashboard() {
     return roots;
   };
 
-  const renderTree = (nodes) => {
-    return nodes.map((node) => (
-      <ul key={node.id} className="list-group list-group-flush ms-4 mt-2">
-        <li className="list-group-item border-0 p-1">
-          <strong>{node.name}</strong>{" "}
-          {node.gender && (
-            <span className="text-primary">
-              ({node.gender === "male" ? "Laki-laki" : "Perempuan"})
-            </span>
-          )}
-          {node.dob && ` (${new Date(node.dob).toLocaleDateString()})`}
-          {node.notes && (
-            <span className="text-muted ms-2 fst-italic">[{node.notes}]</span>
-          )}
-          {node.children.length > 0 && renderTree(node.children)}
-        </li>
-      </ul>
-    ));
+  // Render tree dengan memisahkan level generasi
+  const renderTreeByGeneration = (nodes) => {
+    if (!nodes || nodes.length === 0) return null;
+
+    // Kelompokkan nodes berdasarkan level
+    const levels = {};
+
+    const traverse = (node) => {
+      if (!levels[node.level]) levels[node.level] = [];
+      levels[node.level].push(node);
+      node.children.forEach(traverse);
+    };
+
+    nodes.forEach(traverse);
+
+    // Render setiap level secara horizontal
+    return Object.keys(levels)
+      .sort((a, b) => a - b)
+      .map((lvl) => (
+        <div key={lvl} className="d-flex justify-content-center mb-3 gap-3">
+          {levels[lvl].map((node) => (
+            <div
+              key={node.id}
+              className={`p-2 border rounded text-center ${node.gender === "male"
+                ? "bg-primary bg-opacity-10"
+                : "bg-warning bg-opacity-10"
+                }`}
+              style={{ minWidth: "120px" }}
+            >
+              <strong>{node.name}</strong>
+              <br />
+              <span className="text-primary">
+                ({node.gender === "male" ? "Laki-laki" : "Perempuan"})
+              </span>
+              <br />
+              {node.dob && (
+                <span className="text-muted">
+                  {new Date(node.dob).toLocaleDateString()}
+                </span>
+              )}
+              <br />
+              {node.notes && (
+                <span className="fst-italic text-secondary">[{node.notes}]</span>
+              )}
+            </div>
+          ))}
+        </div>
+      ));
+  };
+
+
+  const getNameById = (id) => {
+    if (!id) return "-";
+    const member = members.find((m) => m.id === id);
+    return member ? member.name : "-";
   };
 
   return (
@@ -122,13 +242,12 @@ export default function UserDashboard() {
       <main className="container my-4">
         <h2 className="text-center mb-4 text-primary">Dashboard Keluarga Anda</h2>
 
-        {/* Toggle Form */}
         <div className="d-flex justify-content-center mb-3 gap-2">
           <button
             className="btn btn-primary"
             onClick={() => setFormVisible(!formVisible)}
           >
-            {formVisible ? "Tutup Form" : "Tambah Anggota"}
+            {formVisible ? "Tutup Form" : editingId ? "Edit Anggota" : "Tambah Anggota"}
           </button>
           <button
             className="btn btn-success"
@@ -138,11 +257,10 @@ export default function UserDashboard() {
           </button>
         </div>
 
-        {/* FORM INPUT */}
         {formVisible && (
           <div className="card mb-4">
             <div className="card-body">
-              <form onSubmit={onCreate}>
+              <form onSubmit={onSubmit}>
                 <div className="row g-3">
                   <div className="col-md-6">
                     <input
@@ -150,9 +268,7 @@ export default function UserDashboard() {
                       placeholder="NIK"
                       className="form-control"
                       value={form.nik}
-                      onChange={(e) =>
-                        setForm({ ...form, nik: e.target.value })
-                      }
+                      onChange={(e) => setForm({ ...form, nik: e.target.value })}
                     />
                   </div>
                   <div className="col-md-6">
@@ -161,10 +277,8 @@ export default function UserDashboard() {
                       placeholder="Nama Lengkap"
                       className="form-control"
                       value={form.name}
-                      onChange={(e) =>
-                        setForm({ ...form, name: e.target.value })
-                      }
                       required
+                      onChange={(e) => setForm({ ...form, name: e.target.value })}
                     />
                   </div>
                   <div className="col-md-6">
@@ -172,163 +286,122 @@ export default function UserDashboard() {
                       type="date"
                       className="form-control"
                       value={form.dob}
-                      onChange={(e) =>
-                        setForm({ ...form, dob: e.target.value })
-                      }
+                      onChange={(e) => setForm({ ...form, dob: e.target.value })}
                     />
                   </div>
                   <div className="col-md-6">
                     <select
                       className="form-control"
                       value={form.gender}
-                      onChange={(e) =>
-                        setForm({ ...form, gender: e.target.value })
-                      }
+                      onChange={(e) => setForm({ ...form, gender: e.target.value })}
                     >
                       <option value="male">Laki-laki</option>
                       <option value="female">Perempuan</option>
                     </select>
                   </div>
-                  <div className="col-md-6">
-                    <input
-                      type="number"
-                      placeholder="ID Orang Tua"
+
+                  <div className="col-md-4">
+                    <select
                       className="form-control"
-                      value={form.parent_id ?? ""}
+                      value={form.father_id ?? ""}
                       onChange={(e) =>
                         setForm({
                           ...form,
-                          parent_id: e.target.value
-                            ? Number(e.target.value)
-                            : null,
+                          father_id: e.target.value ? Number(e.target.value) : null,
                         })
                       }
-                    />
+                    >
+                      <option value="">Pilih Ayah</option>
+                      {members.map((m) => (
+                        <option key={m.id} value={m.id}>
+                          {m.name}
+                        </option>
+                      ))}
+                    </select>
                   </div>
-                  <div className="col-md-6">
-                    <input
-                      type="number"
-                      placeholder="ID Pasangan"
+                  <div className="col-md-4">
+                    <select
+                      className="form-control"
+                      value={form.mother_id ?? ""}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          mother_id: e.target.value ? Number(e.target.value) : null,
+                        })
+                      }
+                    >
+                      <option value="">Pilih Ibu</option>
+                      {members.map((m) => (
+                        <option key={m.id} value={m.id}>
+                          {m.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="col-md-4">
+                    <select
                       className="form-control"
                       value={form.spouse_id ?? ""}
                       onChange={(e) =>
                         setForm({
                           ...form,
-                          spouse_id: e.target.value
-                            ? Number(e.target.value)
-                            : null,
+                          spouse_id: e.target.value ? Number(e.target.value) : null,
                         })
                       }
-                    />
-                  </div>
-                  <div className="col-md-6">
-                    <input
-                      type="number"
-                      placeholder="Generasi"
-                      className="form-control"
-                      value={form.generation}
-                      onChange={(e) =>
-                        setForm({
-                          ...form,
-                          generation: e.target.value
-                            ? Number(e.target.value)
-                            : 1,
-                        })
-                      }
-                    />
-                  </div>
-                  <div className="col-md-6">
-                    <input
-                      type="text"
-                      placeholder="Nama Ayah"
-                      className="form-control"
-                      value={form.father_name}
-                      onChange={(e) =>
-                        setForm({ ...form, father_name: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="col-md-6">
-                    <input
-                      type="text"
-                      placeholder="Nama Ibu"
-                      className="form-control"
-                      value={form.mother_name}
-                      onChange={(e) =>
-                        setForm({ ...form, mother_name: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="col-md-6">
-                    <input
-                      type="number"
-                      placeholder="ID Kakek"
-                      className="form-control"
-                      value={form.grandfather_id ?? ""}
-                      onChange={(e) =>
-                        setForm({
-                          ...form,
-                          grandfather_id: e.target.value
-                            ? Number(e.target.value)
-                            : null,
-                        })
-                      }
-                    />
-                  </div>
-                  <div className="col-md-6">
-                    <input
-                      type="number"
-                      placeholder="ID Nenek"
-                      className="form-control"
-                      value={form.grandmother_id ?? ""}
-                      onChange={(e) =>
-                        setForm({
-                          ...form,
-                          grandmother_id: e.target.value
-                            ? Number(e.target.value)
-                            : null,
-                        })
-                      }
-                    />
+                    >
+                      <option value="">Pilih Pasangan</option>
+                      {members.map((m) => (
+                        <option key={m.id} value={m.id}>
+                          {m.name}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                   <div className="col-12">
                     <textarea
                       placeholder="Catatan"
                       className="form-control"
                       value={form.notes}
-                      onChange={(e) =>
-                        setForm({ ...form, notes: e.target.value })
-                      }
+                      onChange={(e) => setForm({ ...form, notes: e.target.value })}
                     />
                   </div>
                 </div>
+
                 <div className="mt-3 text-end">
                   <button type="submit" className="btn btn-primary">
-                    Simpan Anggota
+                    {editingId ? "Perbarui Anggota" : "Simpan Anggota"}
                   </button>
+                  {editingId && (
+                    <button
+                      type="button"
+                      className="btn btn-secondary ms-2"
+                      onClick={resetForm}
+                    >
+                      Batal
+                    </button>
+                  )}
                 </div>
               </form>
             </div>
           </div>
         )}
 
-        {/* TREE VIEW */}
         {treeVisible && (
           <div className="card mb-4">
             <div className="card-body">
               <h5 className="card-title text-center text-success mb-3">
-                Pedigree Keluarga
+                Pedigree Keluarga (Generasi)
               </h5>
               {members.length === 0 ? (
                 <p className="text-center text-muted">Belum ada anggota.</p>
               ) : (
-                renderTree(buildTree())
+                renderTreeByGeneration(buildTreeByGeneration())
               )}
             </div>
           </div>
         )}
 
-        {/* CARD LIST */}
+
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
           {members.length === 0 && (
             <p className="text-center text-muted">
@@ -343,30 +416,33 @@ export default function UserDashboard() {
                     src={userpict}
                     alt="Profile"
                     className="rounded-circle mb-2"
-                    style={{
-                      width: "80px",
-                      height: "80px",
-                      objectFit: "cover",
-                    }}
+                    style={{ width: "80px", height: "80px", objectFit: "cover" }}
                   />
                   <h6 className="card-title text-primary">{m.name}</h6>
                   <p className="card-text text-muted mb-1">
-                    {m.dob
-                      ? new Date(m.dob).toLocaleDateString()
-                      : "Tanggal tidak tersedia"}
+                    {m.dob ? new Date(m.dob).toLocaleDateString() : "Tanggal tidak tersedia"}
                   </p>
                   <p className="card-text mb-1">
-                    Gender:{" "}
-                    <strong>
-                      {m.gender === "male" ? "Laki-laki" : "Perempuan"}
-                    </strong>
+                    Gender: <strong>{m.gender === "male" ? "Laki-laki" : "Perempuan"}</strong>
                   </p>
-                  <p className="card-text mb-1">Generasi: {m.generation}</p>
-                  <p className="card-text mb-1">Ayah: {m.father_name || "-"}</p>
-                  <p className="card-text mb-1">Ibu: {m.mother_name || "-"}</p>
-                  <p className="card-text fst-italic text-secondary">
-                    {m.notes}
-                  </p>
+                  <p className="card-text mb-1">Ayah: {getNameById(m.father_id)}</p>
+                  <p className="card-text mb-1">Ibu: {getNameById(m.mother_id)}</p>
+                  <p className="card-text mb-1">Pasangan: {getNameById(m.spouse_id)}</p>
+                  <p className="card-text fst-italic text-secondary">{m.notes}</p>
+                  <div className="mt-2">
+                    <button
+                      className="btn btn-sm btn-warning me-2"
+                      onClick={() => onEdit(m)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="btn btn-sm btn-danger"
+                      onClick={() => onDelete(m.id)}
+                    >
+                      Hapus
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

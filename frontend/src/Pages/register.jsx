@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { register } from '../Utils/api.js'; 
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+const MySwal = withReactContent(Swal);
 
 export default function Register() {
   const [username, setUsername] = useState('');
@@ -14,10 +18,22 @@ export default function Register() {
 
     try {
       await register({ username, password }); 
-      alert('Registrasi berhasil! Silakan login.');
+      
+      await MySwal.fire({
+        icon: 'success',
+        title: 'Registrasi berhasil!',
+        text: 'Silakan login untuk melanjutkan.',
+        confirmButtonColor: '#1565c0',
+      });
+
       navigate('/login'); 
     } catch (err) {
-      alert(err.response?.data?.message || 'Registrasi gagal');
+      await MySwal.fire({
+        icon: 'error',
+        title: 'Registrasi gagal',
+        text: err.response?.data?.message || 'Terjadi kesalahan. Silakan coba lagi.',
+        confirmButtonColor: '#c62828',
+      });
     } finally {
       setIsLoading(false);
     }
