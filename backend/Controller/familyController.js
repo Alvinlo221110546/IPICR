@@ -1,60 +1,68 @@
 import * as Family from '../Models/familyModel.js';
 import { insertAudit } from '../Models/auditModel.js';
 
-
+// ✅ Inisialisasi tabel
 export const init = async () => {
   await Family.createFamilyTableIfNotExists();
 };
 
-
+// ✅ Tambah member baru
 export const createMember = async (req, res) => {
+  const conn = await Family.pool.getConnection();
   try {
+    await conn.beginTransaction();
+
     const {
       nik,
       name,
       dob,
-      father_name,
-      mother_name,
       notes,
-      parent_id,
       gender,
       spouse_id,
-      generation,
-      grandfather_id,
-      grandmother_id
+      generation
     } = req.body;
 
-    
     if (!name || !name.trim()) {
       return res.status(400).json({ message: 'Nama wajib diisi' });
     }
-
     if (!nik || nik.length < 10) {
       return res.status(400).json({ message: 'NIK tidak valid' });
     }
 
-   
-    const pid = parent_id ? parseInt(parent_id) : null;
     const sid = spouse_id ? parseInt(spouse_id) : null;
-    const gid = grandfather_id ? parseInt(grandfather_id) : null;
-    const gm_id = grandmother_id ? parseInt(grandmother_id) : null;
     const gen = generation ? parseInt(generation) : 1;
 
+    // 🧩 Tambah member utama
     const id = await Family.insertMember({
       nik,
       name,
       dob,
-      father_name,
-      mother_name,
       notes,
-      parent_id: pid,
       gender: gender || 'male',
-      spouse_id: sid,
       generation: gen,
-      grandfather_id: gid,
-      grandmother_id: gm_id
+      father_id: null,
+      mother_id: null,
+      spouse_id: null // di-update nanti jika ada spouse
     });
 
+    // 🧩 Update pasangan dua arah jika ada
+    if (sid) {
+      const spouse = await Family.getMemberById(sid);
+      if (spouse) {
+        await conn.execute(
+          `UPDATE family_members SET spouse_id = ? WHERE id = ?`,
+          [sid, id]
+        );
+        await conn.execute(
+          `UPDATE family_members SET spouse_id = ? WHERE id = ?`,
+          [id, sid]
+        );
+      }
+    }
+
+    await conn.commit();
+
+    // 🧩 Catat audit log
     await insertAudit({
       user_id: req.user?.userId,
       action: 'create',
@@ -65,12 +73,15 @@ export const createMember = async (req, res) => {
 
     res.status(201).json({ message: 'Member created successfully', id });
   } catch (err) {
+    await conn.rollback();
     console.error('❌ Error creating member:', err);
     res.status(500).json({ message: 'Error creating member', error: err.message });
+  } finally {
+    conn.release();
   }
 };
 
-
+// ✅ Ambil semua member
 export const getMembers = async (req, res) => {
   try {
     const rows = await Family.getAllMembers();
@@ -81,6 +92,7 @@ export const getMembers = async (req, res) => {
   }
 };
 
+// ✅ Ambil member berdasarkan ID
 export const getMemberById = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
@@ -96,7 +108,7 @@ export const getMemberById = async (req, res) => {
   }
 };
 
-
+// ✅ Update member
 export const updateMember = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
@@ -106,42 +118,33 @@ export const updateMember = async (req, res) => {
       nik,
       name,
       dob,
-      father_name,
-      mother_name,
       notes,
-      parent_id,
       gender,
       spouse_id,
       generation,
-      grandfather_id,
-      grandmother_id
+      father_id,
+      mother_id
     } = req.body;
 
-   
     if (!name || !name.trim()) {
       return res.status(400).json({ message: 'Nama wajib diisi' });
     }
 
-    
-    const pid = parent_id ? parseInt(parent_id) : null;
+    const fid = father_id ? parseInt(father_id) : null;
+    const mid = mother_id ? parseInt(mother_id) : null;
     const sid = spouse_id ? parseInt(spouse_id) : null;
-    const gid = grandfather_id ? parseInt(grandfather_id) : null;
-    const gm_id = grandmother_id ? parseInt(grandmother_id) : null;
     const gen = generation ? parseInt(generation) : 1;
 
     await Family.updateMember(id, {
       nik,
       name,
       dob,
-      father_name,
-      mother_name,
       notes,
-      parent_id: pid,
       gender: gender || 'male',
-      spouse_id: sid,
       generation: gen,
-      grandfather_id: gid,
-      grandmother_id: gm_id
+      father_id: fid,
+      mother_id: mid,
+      spouse_id: sid
     });
 
     await insertAudit({
@@ -158,7 +161,7 @@ export const updateMember = async (req, res) => {
   }
 };
 
-
+// ✅ Hapus member
 export const deleteMember = async (req, res) => {
   try {
     const id = parseInt(req.params.id);

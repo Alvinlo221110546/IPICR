@@ -1,109 +1,89 @@
 import { pool } from '../Config/db.js';
 import { encryptText, decryptText } from '../Middleware/encrypt.js';
+export { pool };
 
 export const createFamilyTableIfNotExists = async () => {
   const sql = `
-  CREATE TABLE IF NOT EXISTS family_members (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nik VARCHAR(32) UNIQUE,
-    name VARCHAR(1024) NOT NULL,
-    dob VARCHAR(256),
-    father_name VARCHAR(1024),
-    mother_name VARCHAR(1024),
-    notes VARCHAR(2048),
-    gender ENUM('male','female') DEFAULT 'male',
-    parent_id INT,
-    spouse_id INT,
-    grandfather_id INT,
-    grandmother_id INT,
-    generation INT DEFAULT 1,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
-    FOREIGN KEY (parent_id) REFERENCES family_members(id) ON DELETE SET NULL,
-    FOREIGN KEY (spouse_id) REFERENCES family_members(id) ON DELETE SET NULL,
-    FOREIGN KEY (grandfather_id) REFERENCES family_members(id) ON DELETE SET NULL,
-    FOREIGN KEY (grandmother_id) REFERENCES family_members(id) ON DELETE SET NULL
-  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    CREATE TABLE IF NOT EXISTS family_members (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      nik VARCHAR(32) UNIQUE,
+      name VARCHAR(1024) NOT NULL,
+      dob VARCHAR(256) NULL,
+      notes VARCHAR(2048) NULL,
+      gender ENUM('male','female') DEFAULT 'male',
+      father_id INT NULL,
+      mother_id INT NULL,
+      spouse_id INT NULL,
+      generation INT DEFAULT 1,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      FOREIGN KEY (father_id) REFERENCES family_members(id) ON DELETE SET NULL,
+      FOREIGN KEY (mother_id) REFERENCES family_members(id) ON DELETE SET NULL
+      -- spouse_id tetap tanpa FK
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   `;
   await pool.query(sql);
+  console.log("✅ family_members table ready");
 };
 
 export const insertMember = async ({
   nik,
   name,
-  dob,
-  father_name,
-  mother_name,
-  notes,
-  parent_id,
+  dob = null,
+  notes = null,
   gender = 'male',
   generation = 1,
-  spouse_id,
-  grandfather_id,
-  grandmother_id
+  father_id = null,
+  mother_id = null,
+  spouse_id = null
 }) => {
   const encName = encryptText(name);
-  const encDob = dob ? encryptText(dob) : '';
-  const encFather = father_name ? encryptText(father_name) : '';
-  const encMother = mother_name ? encryptText(mother_name) : '';
-  const encNotes = notes ? encryptText(notes) : '';
-
-  const pid = parent_id ? parseInt(parent_id) : null;
-  const sid = spouse_id ? parseInt(spouse_id) : null;
-  const gid = grandfather_id ? parseInt(grandfather_id) : null;
-  const gm_id = grandmother_id ? parseInt(grandmother_id) : null;
+  const encDob = dob ? encryptText(dob) : null;
+  const encNotes = notes ? encryptText(notes) : null;
 
   const [res] = await pool.execute(
     `INSERT INTO family_members 
-     (nik, name, dob, father_name, mother_name, notes, parent_id, gender, generation, spouse_id, grandfather_id, grandmother_id)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [nik, encName, encDob, encFather, encMother, encNotes, pid, gender, generation, sid, gid, gm_id]
+     (nik, name, dob, notes, gender, generation, father_id, mother_id, spouse_id)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [nik, encName, encDob, encNotes, gender, generation, father_id, mother_id, spouse_id]
   );
 
+  console.log(`✅ Inserted new member: ${name}`);
   return res.insertId;
 };
-
 
 export const updateMember = async (
   id,
   {
     nik,
     name,
-    dob,
-    father_name,
-    mother_name,
-    notes,
-    parent_id,
+    dob = null,
+    notes = null,
     gender,
-    spouse_id,
     generation,
-    grandfather_id,
-    grandmother_id
+    father_id = null,
+    mother_id = null,
+    spouse_id = null
   }
 ) => {
   const encName = encryptText(name);
-  const encDob = dob ? encryptText(dob) : '';
-  const encFather = father_name ? encryptText(father_name) : '';
-  const encMother = mother_name ? encryptText(mother_name) : '';
-  const encNotes = notes ? encryptText(notes) : '';
-
-  const pid = parent_id ? parseInt(parent_id) : null;
-  const sid = spouse_id ? parseInt(spouse_id) : null;
-  const gid = grandfather_id ? parseInt(grandfather_id) : null;
-  const gm_id = grandmother_id ? parseInt(grandmother_id) : null;
+  const encDob = dob ? encryptText(dob) : null;
+  const encNotes = notes ? encryptText(notes) : null;
 
   await pool.execute(
     `UPDATE family_members 
-     SET nik=?, name=?, dob=?, father_name=?, mother_name=?, notes=?, parent_id=?, gender=?, spouse_id=?, generation=?, grandfather_id=?, grandmother_id=? 
+     SET nik=?, name=?, dob=?, notes=?, gender=?, generation=?, father_id=?, mother_id=?, spouse_id=? 
      WHERE id=?`,
-    [nik, encName, encDob, encFather, encMother, encNotes, pid, gender, sid, generation, gid, gm_id, id]
+    [nik, encName, encDob, encNotes, gender, generation, father_id, mother_id, spouse_id, id]
   );
+
+  console.log(`📝 Updated member ID ${id} (${name})`);
 };
+
 
 export const getAllMembers = async () => {
   const [rows] = await pool.query(`
-    SELECT id, nik, name, dob, father_name, mother_name, notes, gender, parent_id, spouse_id, generation, grandfather_id, grandmother_id
+    SELECT id, nik, name, dob, notes, gender, father_id, mother_id, spouse_id, generation
     FROM family_members
     ORDER BY id
   `);
@@ -112,19 +92,15 @@ export const getAllMembers = async () => {
     id: r.id,
     nik: r.nik,
     name: decryptText(r.name),
-    dob: r.dob ? decryptText(r.dob) : '',
-    father_name: r.father_name ? decryptText(r.father_name) : '',
-    mother_name: r.mother_name ? decryptText(r.mother_name) : '',
-    notes: r.notes ? decryptText(r.notes) : '',
+    dob: r.dob ? decryptText(r.dob) : null,
+    notes: r.notes ? decryptText(r.notes) : null,
     gender: r.gender,
-    parent_id: r.parent_id,
+    father_id: r.father_id,
+    mother_id: r.mother_id,
     spouse_id: r.spouse_id,
-    generation: r.generation,
-    grandfather_id: r.grandfather_id,
-    grandmother_id: r.grandmother_id
+    generation: r.generation
   }));
 };
-
 
 export const getMemberById = async (id) => {
   const [rows] = await pool.query(`SELECT * FROM family_members WHERE id=?`, [id]);
@@ -134,20 +110,17 @@ export const getMemberById = async (id) => {
     id: r.id,
     nik: r.nik,
     name: decryptText(r.name),
-    dob: r.dob ? decryptText(r.dob) : '',
-    father_name: r.father_name ? decryptText(r.father_name) : '',
-    mother_name: r.mother_name ? decryptText(r.mother_name) : '',
-    notes: r.notes ? decryptText(r.notes) : '',
+    dob: r.dob ? decryptText(r.dob) : null,
+    notes: r.notes ? decryptText(r.notes) : null,
     gender: r.gender,
-    parent_id: r.parent_id,
+    father_id: r.father_id,
+    mother_id: r.mother_id,
     spouse_id: r.spouse_id,
-    generation: r.generation,
-    grandfather_id: r.grandfather_id,
-    grandmother_id: r.grandmother_id
+    generation: r.generation
   };
 };
 
-
 export const deleteMember = async (id) => {
   await pool.execute(`DELETE FROM family_members WHERE id=?`, [id]);
+  console.log(`🗑️ Deleted member ID: ${id}`);
 };

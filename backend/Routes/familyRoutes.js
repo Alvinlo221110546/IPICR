@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get('/', authRequired, Family.getMembers);
 router.post('/', authRequired, Family.createMember); 
-router.put('/:id', authRequired, permit('admin'), Family.updateMember);
-router.delete('/:id', authRequired, permit('admin'), Family.deleteMember);
+router.put('/:id', authRequired, Family.updateMember);
+router.delete('/:id', authRequired, Family.deleteMember);
 
 export default router;

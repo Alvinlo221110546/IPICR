@@ -6,7 +6,7 @@ import withReactContent from 'sweetalert2-react-content';
 
 const MySwal = withReactContent(Swal);
 
-// ==================== Member Form ====================
+//  Member Form 
 function MemberForm({ onDone, initial, members }) {
   const [form, setForm] = useState({
     nik: '',
@@ -151,7 +151,7 @@ function MemberForm({ onDone, initial, members }) {
   );
 }
 
-// ==================== Dashboard ====================
+//  Dashboard 
 export default function Dashboard() {
   const [members, setMembers] = useState([]);
   const [editing, setEditing] = useState(null);
@@ -311,7 +311,7 @@ export default function Dashboard() {
   );
 }
 
-// ==================== Styles ====================
+//  Styles 
 const formStyle = {
   display: 'flex',
   flexDirection: 'column',

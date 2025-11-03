@@ -3,8 +3,6 @@ import { getMembers, createMember, updateMember, deleteMember } from "../Utils/a
 import Footer from "../Componen/Footer.jsx";
 import "bootstrap/dist/css/bootstrap.min.css";
 import userpict from "../assets/user-default.png";
-
-// SweetAlert2
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 
@@ -156,17 +154,15 @@ export default function UserDashboard() {
     }
   };
 
-  // Membuat tree berbasis generasi
+ 
   const buildTreeByGeneration = () => {
     const map = {};
     const roots = [];
 
-    // Inisialisasi node dengan children dan level
     members.forEach((m) => {
       map[m.id] = { ...m, children: [], level: 0 };
     });
 
-    // Pasang children dan tentukan level generasi
     members.forEach((m) => {
       const node = map[m.id];
       if (m.father_id && map[m.father_id]) {
@@ -180,11 +176,9 @@ export default function UserDashboard() {
     return roots;
   };
 
-  // Render tree dengan memisahkan level generasi
   const renderTreeByGeneration = (nodes) => {
     if (!nodes || nodes.length === 0) return null;
 
-    // Kelompokkan nodes berdasarkan level
     const levels = {};
 
     const traverse = (node) => {
@@ -195,7 +189,6 @@ export default function UserDashboard() {
 
     nodes.forEach(traverse);
 
-    // Render setiap level secara horizontal
     return Object.keys(levels)
       .sort((a, b) => a - b)
       .map((lvl) => (
