@@ -40,11 +40,18 @@ Copy code
 ```bash
 git clone <url-repo>
 cd ICRIPedigree
-2️⃣ Konfigurasi Environment
+```
+2️⃣ Konfigurasi Environment  
+Salin file environment contoh dan sesuaikan nilainya:
+```bash
+cp frontend/.env.example frontend/.env
+cp backend/.env.example backend/.env
+
 🔹 Frontend (/frontend/.env)
 env
 Copy code
 VITE_API_URL=http://localhost:5000
+
 🔹 Backend (/backend/.env)
 env
 PORT=5000
@@ -58,15 +65,11 @@ JWT_SECRET=        # (isi dengan secret key rahasia Anda)
 SECRET_KEY_BASE64= # (isi dengan secret key dalam base64)
 COOKIE_NAME=icr_token
 CORS_ORIGIN=http://localhost:5173
-
+```
 3️⃣ Jalankan Aplikasi dengan Docker Compose
-bash
-Copy code
 docker-compose up --build
-Akses di browser:
 
 Frontend: http://localhost:5173
-
 Backend API: http://localhost:5000
 ```
 ---
@@ -127,9 +130,9 @@ Contoh isi:
 arduino
 Copy code
 https://drive.google.com/file/d/xxxxxxxxxxxx/view
----
+
 
 ## 🌐 URL Aplikasi Live
 https://icrpedigree.vercel.app
 (Contoh — sesuaikan dengan domain kamu)
----
+
