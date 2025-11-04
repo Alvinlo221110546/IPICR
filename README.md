@@ -47,8 +47,6 @@ cp frontend/.env.example frontend/.env
 cp backend/.env.example backend/.env
 
 🔹 Frontend (/frontend/.env)
-env
-Copy code
 VITE_API_URL=<URL_BACKEND_RAILWAY_ANDA>
 # Ganti dengan URL backend yang diberikan Railway,
 # misalnya: https://icrpedigree-production.up.railway.app
