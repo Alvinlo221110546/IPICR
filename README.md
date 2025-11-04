@@ -68,8 +68,9 @@ CORS_ORIGIN=http://localhost:5173
 ```
 3️⃣ Jalankan Aplikasi dengan Docker Compose
 docker-compose up --build
-
+```
 Frontend: http://localhost:5173
+
 Backend API: http://localhost:5000
 ```
 ---
