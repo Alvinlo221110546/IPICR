@@ -46,21 +46,18 @@ Copy code
 VITE_API_URL=http://localhost:5000
 🔹 Backend (/backend/.env)
 env
-Copy code
 PORT=5000
 NODE_ENV=development
-
 DB_HOST=db
 DB_PORT=3306
 DB_USER=root
-DB_PASS=
+DB_PASS=           # (isi sesuai konfigurasi database Anda)
 DB_NAME=icr_pedigree
-
-JWT_SECRET=a769b29e1b3ac641bb58b0379adeb19feedd5d2248a8a1fba4e787cc4143ac8c
-SECRET_KEY_BASE64=wb5gAXxYasGuGgCJhfI2RgkXfi9oqoTz4iUGuzkUuz0=
-
+JWT_SECRET=        # (isi dengan secret key rahasia Anda)
+SECRET_KEY_BASE64= # (isi dengan secret key dalam base64)
 COOKIE_NAME=icr_token
 CORS_ORIGIN=http://localhost:5173
+
 3️⃣ Jalankan Aplikasi dengan Docker Compose
 bash
 Copy code
