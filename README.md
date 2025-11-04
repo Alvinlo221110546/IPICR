@@ -29,7 +29,7 @@ Copy code
 - **Backend:** Node.js + Express.js  
 - **Database:** MySQL  
 - **Containerization:** Docker & Docker Compose  
-- **Deployment:** GitHub Actions + (Opsional: Vercel / Render)
+- **Deployment:** GitHub Actions + ( Vercel / Railway)
 
 ---
 
