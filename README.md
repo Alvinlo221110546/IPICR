@@ -67,9 +67,9 @@ Akses di browser:
 Frontend: http://localhost:5173
 
 Backend API: http://localhost:5000
-
 ```
-💻 Langkah-Langkah Penggunaan
+---
+##💻 Langkah-Langkah Penggunaan
 1. Melihat Daftar Anggota Keluarga
 Setelah login, pengguna akan melihat Dashboard Keluarga yang menampilkan daftar anggota dalam bentuk kartu lengkap dengan foto, nama, tanggal lahir, dan hubungan keluarga.
 Setiap kartu memiliki tombol Edit (kuning) dan Hapus (merah).
@@ -102,8 +102,9 @@ Data akan dihapus dari database dan tercatat di log sistem.
 8. Melihat Visualisasi Pohon Keluarga
 Klik tombol Tutup Tree di dashboard untuk menampilkan tampilan Pedigree Keluarga (Generasi) dalam format hierarki.
 Kotak biru muda untuk laki-laki dan krem untuk perempuan, tersusun berdasarkan generasi secara rapi.
+---
 
-📞 Fitur Tambahan — Contact (Kirim ke WhatsApp)
+##📞 Fitur Tambahan — Contact (Kirim ke WhatsApp)
 Pengguna dapat mengirimkan pesan langsung ke pengembang aplikasi melalui form Contact.
 
 Fitur:
@@ -123,8 +124,10 @@ Contoh URL WhatsApp:
 
 perl
 Copy code
-https://wa.me/6281234567890?text=Nama:%20Doni%0AEmail:%20doni@gmail.com%0ACatatan:%20Saya%20ingin%20melaporkan%20bug%20di%20halaman%20dashboard.
-🎥 Video Demo
+https://wa.me/628979728413?text=Nama:%20Doni%0AEmail:%20doni@gmail.com%0ACatatan:%20Saya%20ingin%20melaporkan%20bug%20di%20halaman%20dashboard.
+---
+
+###🎥 Video Demo
 📂 Folder /video berisi:
 
 link_video.txt → berisi link Google Drive atau YouTube ke video demo aplikasi.
@@ -134,6 +137,9 @@ Contoh isi:
 arduino
 Copy code
 https://drive.google.com/file/d/xxxxxxxxxxxx/view
-🌐 URL Aplikasi Live
+---
+
+###🌐 URL Aplikasi Live
 https://icrpedigree.vercel.app
 (Contoh — sesuaikan dengan domain kamu)
+---
