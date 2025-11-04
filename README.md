@@ -129,8 +129,6 @@ link_video.txt → berisi link Google Drive atau YouTube ke video demo aplikasi.
 
 Contoh isi:
 
-arduino
-Copy code
 https://drive.google.com/file/d/xxxxxxxxxxxx/view
 
 
