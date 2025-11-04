@@ -143,6 +143,6 @@ https://drive.google.com/file/d/xxxxxxxxxxxx/view
 
 
 ## 🌐 URL Aplikasi Live
-https://icrpedigree.vercel.app
+https://ipicr.vercel.app/
 
 
