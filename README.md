@@ -105,7 +105,7 @@ Klik tombol Tutup Tree di dashboard untuk menampilkan tampilan Pedigree Keluarga
 Kotak biru muda untuk laki-laki dan krem untuk perempuan, tersusun berdasarkan generasi secara rapi.
 ---
 
-##📞 Fitur Tambahan — Contact (Kirim ke WhatsApp)
+## 📞 Fitur Tambahan — Contact (Kirim ke WhatsApp)
 Pengguna dapat mengirimkan pesan langsung ke pengembang aplikasi melalui form Contact.
 
 Fitur:
@@ -117,7 +117,7 @@ Setelah dikirim, pesan otomatis membuka WhatsApp dan mengirimkan format seperti 
 
 ---
 
-###🎥 Video Demo
+## 🎥 Video Demo
 📂 Folder /video berisi:
 
 link_video.txt → berisi link Google Drive atau YouTube ke video demo aplikasi.
@@ -129,7 +129,7 @@ Copy code
 https://drive.google.com/file/d/xxxxxxxxxxxx/view
 ---
 
-###🌐 URL Aplikasi Live
+## 🌐 URL Aplikasi Live
 https://icrpedigree.vercel.app
 (Contoh — sesuaikan dengan domain kamu)
 ---
