@@ -143,5 +143,5 @@ https://drive.google.com/file/d/xxxxxxxxxxxx/view
 
 ## 🌐 URL Aplikasi Live
 https://icrpedigree.vercel.app
-(Contoh — sesuaikan dengan domain kamu)
+
 
