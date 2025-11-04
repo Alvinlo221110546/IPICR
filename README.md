@@ -19,8 +19,9 @@ Aplikasi ini memungkinkan pengguna untuk menambah, mengedit, dan menghapus anggo
 ## 🏗️ Arsitektur & Teknologi
 
 **Arsitektur Sistem:**
+```
 [Frontend (React + Vite)] <-> [Backend (Node.js + Express)] <-> [Database (MySQL)] <-> [Docker + GitHub Actions]
-
+```
 markdown
 Copy code
 
