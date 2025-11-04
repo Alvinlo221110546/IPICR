@@ -29,7 +29,7 @@ Copy code
 - **Backend:** Node.js + Express.js  
 - **Database:** MySQL  
 - **Containerization:** Docker & Docker Compose  
-- **Deployment:**  GitHub Actions dengan opsi hosting menggunakan Vercel (Frontend) dan Railway (Backend)
+- **Deployment:**  GitHub Actions dengan hosting menggunakan Vercel (Frontend) dan Railway (Backend & Database)
 
 ---
 
