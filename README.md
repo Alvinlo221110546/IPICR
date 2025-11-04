@@ -69,7 +69,7 @@ Frontend: http://localhost:5173
 Backend API: http://localhost:5000
 ```
 ---
-##💻 Langkah-Langkah Penggunaan
+## 💻 Langkah-Langkah Penggunaan
 1. Melihat Daftar Anggota Keluarga
 Setelah login, pengguna akan melihat Dashboard Keluarga yang menampilkan daftar anggota dalam bentuk kartu lengkap dengan foto, nama, tanggal lahir, dan hubungan keluarga.
 Setiap kartu memiliki tombol Edit (kuning) dan Hapus (merah).
@@ -113,18 +113,7 @@ Input: nama, email, dan catatan.
 
 Setelah dikirim, pesan otomatis membuka WhatsApp dan mengirimkan format seperti berikut:
 
-Contoh Format WA Otomatis:
 
-makefile
-Copy code
-Nama: [Nama User]
-Email: [Email User]
-Catatan: [Pesan yang diketik]
-Contoh URL WhatsApp:
-
-perl
-Copy code
-https://wa.me/628979728413?text=Nama:%20Doni%0AEmail:%20doni@gmail.com%0ACatatan:%20Saya%20ingin%20melaporkan%20bug%20di%20halaman%20dashboard.
 ---
 
 ###🎥 Video Demo
