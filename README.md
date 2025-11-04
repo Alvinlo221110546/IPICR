@@ -55,6 +55,7 @@ VITE_API_URL=<URL_BACKEND_RAILWAY_ANDA>
 
 
 🔹 Backend (/backend/.env)
+# Server Configuration
 PORT=5000
 NODE_ENV=production
 
