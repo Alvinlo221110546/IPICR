@@ -49,7 +49,7 @@ cp backend/.env.example backend/.env
 🔹 Frontend (/frontend/.env)
 env
 Copy code
-VITE_API_URL=<URL_BACKEND_RAILWAY_ANDA>
+VITE_API_URL=<URL_BACKEND_RAILWAY_ANDA> → URL backend yang diberikan Railway (misal: https://icrpedigree-production.up.railway.app).
 
 🔹 Backend (/backend/.env)
 PORT=5000
