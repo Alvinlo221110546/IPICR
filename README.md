@@ -68,6 +68,8 @@ DB_NAME=railway
 # JWT Configuration
 JWT_SECRET=your_jwt_secret_here
 SECRET_KEY_BASE64=your_secret_key_base64_here
+# Gunakan perintah ini untuk generate key baru:
+# node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 
 # Cookie & CORS
 COOKIE_NAME=icr_token
