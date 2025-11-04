@@ -41,7 +41,7 @@ Copy code
 git clone <url-repo>
 cd ICRIPedigree
 ```
-2️⃣ Konfigurasi Environment  
+### 2️⃣ Konfigurasi Environment  
 Salin file environment contoh dan sesuaikan nilainya:
 ```bash
 cp frontend/.env.example frontend/.env
@@ -66,14 +66,16 @@ SECRET_KEY_BASE64= # (isi dengan secret key dalam base64)
 COOKIE_NAME=icr_token
 CORS_ORIGIN=http://localhost:5173
 ```
-3️⃣ Jalankan Aplikasi dengan Docker Compose
+### 3️⃣ Jalankan Aplikasi dengan Docker Compose
+```
 docker-compose up --build
 ```
+Aplikasi akan otomatis berjalan di:
+
 Frontend: http://localhost:5173
 
 Backend API: http://localhost:5000
-```
----
+
 ## 💻 Langkah-Langkah Penggunaan
 1. Melihat Daftar Anggota Keluarga
 Setelah login, pengguna akan melihat Dashboard Keluarga yang menampilkan daftar anggota dalam bentuk kartu lengkap dengan foto, nama, tanggal lahir, dan hubungan keluarga.
