@@ -29,7 +29,7 @@ Copy code
 - **Backend:** Node.js + Express.js  
 - **Database:** MySQL  
 - **Containerization:** Docker & Docker Compose  
-- **Deployment:** GitHub Actions + (Opsional: Vercel / Render)
+- **Deployment:**  GitHub Actions dengan hosting menggunakan Vercel (Frontend) dan Railway (Backend & Database)
 
 ---
 
@@ -47,23 +47,33 @@ cp frontend/.env.example frontend/.env
 cp backend/.env.example backend/.env
 
 🔹 Frontend (/frontend/.env)
-env
-Copy code
-VITE_API_URL=http://localhost:5000
+VITE_API_URL=<URL_BACKEND_RAILWAY_ANDA>
+# Ganti dengan URL backend yang diberikan Railway,
+# misalnya: https://icrpedigree-production.up.railway.app
+
 
 🔹 Backend (/backend/.env)
-env
+# Server Configuration
 PORT=5000
-NODE_ENV=development
-DB_HOST=db
+NODE_ENV=production
+
+# Database Configuration - GANTI SESUAI DATA RAILWAY
+DB_HOST=mysql.railway.internal
 DB_PORT=3306
 DB_USER=root
-DB_PASS=           # (isi sesuai konfigurasi database Anda)
-DB_NAME=icr_pedigree
-JWT_SECRET=        # (isi dengan secret key rahasia Anda)
-SECRET_KEY_BASE64= # (isi dengan secret key dalam base64)
+DB_PASS=your_database_password_here
+DB_NAME=railway
+
+# JWT Configuration
+JWT_SECRET=your_jwt_secret_here
+SECRET_KEY_BASE64=your_secret_key_base64_here
+# Gunakan perintah ini untuk generate key baru:
+# node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+
+# Cookie & CORS
 COOKIE_NAME=icr_token
-CORS_ORIGIN=http://localhost:5173
+CORS_ORIGIN=https://ipicr.vercel.app
+
 ```
 ### 3️⃣ Jalankan Aplikasi dengan Docker Compose
 ```
@@ -133,6 +143,6 @@ https://drive.google.com/file/d/xxxxxxxxxxxx/view
 
 
 ## 🌐 URL Aplikasi Live
-https://icrpedigree.vercel.app
-(Contoh — sesuaikan dengan domain kamu)
+https://ipicr.vercel.app/
+
 
