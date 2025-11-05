@@ -139,7 +139,10 @@ link_video.txt → berisi link Google Drive atau YouTube ke video demo aplikasi.
 
 Contoh isi:
 
-https://drive.google.com/file/d/xxxxxxxxxxxx/view
+https://mikroskilacid-my.sharepoint.com/:v:/g/personal/221110546_students_mikroskil_ac_id/EU47MYN-v2NOtULaB7QYl6MBZBY_Jih7BZPtFE98Fd8WFA?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=cjjJNV
+
+
+https://youtu.be/7xf0JPPI1MI?si=SsFp1TJaaje5A7Bp
 
 
 ## 🌐 URL Aplikasi Live
