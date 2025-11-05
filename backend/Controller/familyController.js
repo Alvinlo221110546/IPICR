@@ -1,12 +1,12 @@
 import * as Family from '../Models/familyModel.js';
 import { insertAudit } from '../Models/auditModel.js';
 
-// ✅ Inisialisasi tabel
+
 export const init = async () => {
   await Family.createFamilyTableIfNotExists();
 };
 
-// ✅ Tambah member baru
+
 export const createMember = async (req, res) => {
   const conn = await Family.pool.getConnection();
   try {
@@ -32,7 +32,7 @@ export const createMember = async (req, res) => {
     const sid = spouse_id ? parseInt(spouse_id) : null;
     const gen = generation ? parseInt(generation) : 1;
 
-    // 🧩 Tambah member utama
+
     const id = await Family.insertMember({
       nik,
       name,
@@ -42,10 +42,9 @@ export const createMember = async (req, res) => {
       generation: gen,
       father_id: null,
       mother_id: null,
-      spouse_id: null // di-update nanti jika ada spouse
+      spouse_id: null 
     });
 
-    // 🧩 Update pasangan dua arah jika ada
     if (sid) {
       const spouse = await Family.getMemberById(sid);
       if (spouse) {
@@ -62,7 +61,6 @@ export const createMember = async (req, res) => {
 
     await conn.commit();
 
-    // 🧩 Catat audit log
     await insertAudit({
       user_id: req.user?.userId,
       action: 'create',
@@ -81,7 +79,6 @@ export const createMember = async (req, res) => {
   }
 };
 
-// ✅ Ambil semua member
 export const getMembers = async (req, res) => {
   try {
     const rows = await Family.getAllMembers();
@@ -92,7 +89,7 @@ export const getMembers = async (req, res) => {
   }
 };
 
-// ✅ Ambil member berdasarkan ID
+
 export const getMemberById = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
@@ -108,7 +105,6 @@ export const getMemberById = async (req, res) => {
   }
 };
 
-// ✅ Update member
 export const updateMember = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
@@ -161,7 +157,6 @@ export const updateMember = async (req, res) => {
   }
 };
 
-// ✅ Hapus member
 export const deleteMember = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
