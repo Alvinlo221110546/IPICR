@@ -264,8 +264,18 @@ export default function Dashboard() {
 
           <div style={{ flex: 2 }}>
             <h3 style={{ color: '#1565c0', marginBottom: '12px' }}>Daftar Anggota</h3>
+
             <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', backgroundColor: '#fff', borderRadius: '10px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+              <table
+                style={{
+                  width: '100%',
+                  borderCollapse: 'collapse',
+                  backgroundColor: '#fff',
+                  borderRadius: '10px',
+                  overflow: 'hidden',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                }}
+              >
                 <thead style={{ backgroundColor: '#1565c0', color: 'white' }}>
                   <tr>
                     <th style={thStyle}>ID</th>
@@ -281,22 +291,37 @@ export default function Dashboard() {
                     <th style={thStyle}>Aksi</th>
                   </tr>
                 </thead>
+
                 <tbody>
                   {members.map((m, idx) => (
-                    <tr key={m.id} style={{ backgroundColor: idx % 2 === 0 ? '#f8f9fa' : '#fff' }}>
+                    <tr
+                      key={m.id}
+                      style={{
+                        backgroundColor: idx % 2 === 0 ? '#f8f9fa' : '#fff',
+                      }}
+                    >
                       <td style={tdStyle}>{m.id}</td>
                       <td style={tdStyle}>{m.nik || ''}</td>
                       <td style={tdStyle}>{m.name}</td>
-                      <td style={tdStyle}>{m.gender === 'male' ? 'Laki-laki' : 'Perempuan'}</td>
+                      <td style={tdStyle}>
+                        {m.gender === 'male' ? 'Laki-laki' : 'Perempuan'}
+                      </td>
                       <td style={tdStyle}>{m.generation}</td>
                       <td style={tdStyle}>{m.dob || ''}</td>
                       <td style={tdStyle}>{getNameById(m.father_id)}</td>
                       <td style={tdStyle}>{getNameById(m.mother_id)}</td>
                       <td style={tdStyle}>{getNameById(m.spouse_id)}</td>
                       <td style={tdStyle}>{m.notes || ''}</td>
-                      <td style={tdStyle}>
-                        <button onClick={() => setEditing(m)} style={editBtn}>Edit</button>
-                        <button onClick={() => onDelete(m.id)} style={delBtn}>Hapus</button>
+
+                      <td style={{ ...tdStyle, textAlign: 'center' }}>
+                        <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
+                          <button onClick={() => setEditing(m)} style={editBtn}>
+                            Edit
+                          </button>
+                          <button onClick={() => onDelete(m.id)} style={delBtn}>
+                            Hapus
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -304,6 +329,7 @@ export default function Dashboard() {
               </table>
             </div>
           </div>
+
         </div>
       </main>
       <Footer />
