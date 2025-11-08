@@ -17,9 +17,12 @@ export const pool = mysql.createPool({
 (async () => {
   try {
     const connection = await pool.getConnection();
-    console.log('✅ Database connected!');
+    console.log('✅ Database connected successfully!');
+    console.log(`📍 Host: ${process.env.DB_HOST}`);
+    console.log(`📊 Database: ${process.env.DB_NAME}`);
     connection.release(); 
   } catch (err) {
-    console.error('❌ Database connection failed:', err);
+    console.error('❌ Database connection failed:', err.message);
+    console.error('🔍 Check your .env file configuration');
   }
 })();
